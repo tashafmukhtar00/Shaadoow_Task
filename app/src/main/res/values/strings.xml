@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Shaadoow_Task</string>
+    <string name="task_details">Task Details : </string>
+    <string name="task_details_text">Create a task for merging two videos side by side with some real time video filters using ffmpeg framework or the native Android framework.</string>
+    <string name="lets_go">Lets Go</string>
+    <string name="choose_video_one">Choose Video One</string>
+    <string name="choose_video_two">Choose Video Two</string>
+    <string name="merge_video_side_by_side">Merge Video Side By Side</string>
 </resources>
