@@ -6,4 +6,6 @@
     <string name="choose_video_one">Choose Video One</string>
     <string name="choose_video_two">Choose Video Two</string>
     <string name="merge_video_side_by_side">Merge Video Side By Side</string>
+    <string name="path_of_video_one_will_show_after_you_chose_vedio">Path of video one will show after you chose vedio</string>
+    <string name="path_of_video_two_will_show_after_you_chose_vedio">Path of video two will show after you chose vedio</string>
 </resources>

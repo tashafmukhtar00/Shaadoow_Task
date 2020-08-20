@@ -48,7 +48,7 @@ public class LauncherActivity extends AppCompatActivity implements EasyPermissio
 
     @AfterPermissionGranted(123)
     private void goToHome() {
-        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
 
             Intent goToMainIntent = new Intent(getApplicationContext(), MainActivity.class);

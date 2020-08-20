@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.tashi.shaadoow"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -41,6 +41,8 @@ dependencies {
 
     // ffmpeg android
     implementation 'nl.bravobit:android-ffmpeg:1.1.7'
+
+//    implementation 'com.writingminds:FFmpegAndroid:0.3.2'
 
     // Media picker library android
     /* media picker */
