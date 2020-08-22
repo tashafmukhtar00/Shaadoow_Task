@@ -1,5 +1,6 @@
 package com.tashi.shaadoow.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     File mfile;
     private Button mMergeVideoSideBySide;
     private Button mKalvinFilterButton;
-    private Button mWillowFilterButton;
+
 
     private TextView mVideoViewTwo;
 
@@ -50,10 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private ProgressBar mProgressBar;
-    private Button mFadeInOutFilterButton;
+
     private String kalvinVideoPath;
-    private String willowVideoPath;
-    private String FADE_IN_OUT_VIDEO_PATH;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void checkFFmpegSupport() {
-
-        if (FFmpeg.getInstance(getApplicationContext()).isSupported()) {
-            Toast.makeText(this, "ffmpeg is supported", Toast.LENGTH_SHORT).show();
-        } else {
-            // ffmpeg is not supported
-            Toast.makeText(this, "ffmpeg is not supported", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
 
     private void initViews() {
 
@@ -93,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         mVideoOneButton = findViewById(R.id.buttonVideoOne);
         mVideoTwoButton = findViewById(R.id.buttonVideoTwo);
         mKalvinFilterButton = findViewById(R.id.buttonKalvinFilter);
-        mWillowFilterButton = findViewById(R.id.buttonWillowFilter);
-        mFadeInOutFilterButton = findViewById(R.id.buttonFadeInOut);
 
 
         mMergeVideoSideBySide = findViewById(R.id.button_merge_video_side_by_side);
@@ -116,23 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        mFadeInOutFilterButton.setOnClickListener(v -> {
-
-            File file = new File(Environment.getExternalStorageDirectory() + File.separator + "fadeInOutVideo.mp4");
-            try {
-                file.createNewFile();
-                FADE_IN_OUT_VIDEO_PATH = file.getAbsolutePath();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (MERGE_VIDEO_PATH != null) {
-
-
-                final String[] command = new String[]{"-y", "-i", MERGE_VIDEO_PATH, "-acodec", "copy", "-vf", "fade=t=in:st=0:d=1, fade=t=out:st=12:d=2", FADE_IN_OUT_VIDEO_PATH};
-                executeMergeVideoCommand(command);
-            }
-
-        });
 
         mVideoOneButton.setOnClickListener(v -> {
 
@@ -181,32 +151,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        mWillowFilterButton.setOnClickListener(v -> {
-
-            if (MERGE_VIDEO_PATH != null) {
-
-
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + "finalWillow.mp4");
-                try {
-                    file.createNewFile();
-                    willowVideoPath = file.getAbsolutePath();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-                //  String[] mergeVideoSideBySide = {"-y", "-i", VIDEO_PATH_ONE, "-i", VIDEO_PATH_TWO, "-filter_complex", "[0:v]scale=480:640,setsar=1[l];[1:v]scale=480:640,setsar=1[r];[l][r]hstack=shortest=1", "-c:v", "libx264", "-crf", "23", "-preset", "veryfast", savingPath};
-
-
-                String[] kalvinFilterCommand = {"-y", "-i", MERGE_VIDEO_PATH, "-vf", "curves=preset=lighter", "-c:a", "copy", willowVideoPath};
-
-                executeWillowFilterCommand(kalvinFilterCommand);
-            } else {
-                Toast.makeText(getApplicationContext(), "Merge video first", Toast.LENGTH_SHORT).show();
-            }
-
-
-        });
     }
 
     private void getFilePath() {
@@ -274,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
     // UPDATED!
     public String getPath(Uri uri) {
         String[] projection = {MediaStore.Video.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             // HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
             // THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
@@ -327,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
 
@@ -375,102 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        } catch (Exception e) {
-        }
-
-
-    }
-
-
-    // for applying kalvin filter
-    private void executeWillowFilterCommand(final String[] command) {
-
-        try {
-            mFFtask = FFmpeg.getInstance(getApplicationContext()).execute(command, new ExecuteBinaryResponseHandler() {
-                @Override
-                public void onStart() {
-                    super.onStart();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onProgress(String message) {
-                    super.onProgress(message);
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    super.onFailure(message);
-
-                    Toast.makeText(MainActivity.this, "failed" + message, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onSuccess(String message) {
-                    super.onSuccess(message);
-
-                    Uri uri = Uri.parse(willowVideoPath);
-                    mFinalVideoView.setVideoURI(uri);
-                    mFinalVideoView.start();
-
-                    // Toast.makeText(MainActivity.this, "" + message, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFinish() {
-                    super.onFinish();
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-            });
-
-        } catch (Exception e) {
-        }
-
-
-    }
-
-    private void executeFadeInOutCommand(final String[] command) {
-
-        try {
-            mFFtask = FFmpeg.getInstance(getApplicationContext()).execute(command, new ExecuteBinaryResponseHandler() {
-                @Override
-                public void onStart() {
-                    super.onStart();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onProgress(String message) {
-                    super.onProgress(message);
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    super.onFailure(message);
-
-                    Toast.makeText(MainActivity.this, "failed" + message, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onSuccess(String message) {
-                    super.onSuccess(message);
-                    if (FADE_IN_OUT_VIDEO_PATH != null) {
-                        Uri uri = Uri.parse(FADE_IN_OUT_VIDEO_PATH);
-                        mFinalVideoView.setVideoURI(uri);
-                        mFinalVideoView.start();
-                    }
-
-                    // Toast.makeText(MainActivity.this, "" + message, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFinish() {
-                    super.onFinish();
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
-            });
-
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
 
